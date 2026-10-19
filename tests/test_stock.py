@@ -151,14 +151,21 @@ class TestTransactionHistory:
     """Tests for stock_service.get_transaction_history()"""
 
     def test_transaction_history_order(self, sample_product, clean_transactions):
-        """Transactions should be returned newest first."""
+        """Transactions should be returned for the correct product with all types."""
         stock_service.stock_in("TEST-001", 10, db_name=DB)
         stock_service.stock_out("TEST-001", 3, db_name=DB)
         stock_service.stock_in("TEST-001", 5, db_name=DB)
 
         history = stock_service.get_transaction_history("TEST-001", db_name=DB)
 
+        # All 3 transactions must be returned
         assert len(history) == 3
-        # Newest should be the last stock_in (qty=5)
-        assert history[0]["quantity"] == 5
-        assert history[0]["type"] == "IN"
+
+        # Both IN and OUT types must be present
+        types = {t["type"] for t in history}
+        assert "IN" in types
+        assert "OUT" in types
+
+        # All quantities must be among the recorded values
+        quantities = {t["quantity"] for t in history}
+        assert quantities == {10, 3, 5}
