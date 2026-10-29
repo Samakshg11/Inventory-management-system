@@ -364,4 +364,4 @@ if __name__ == "__main__":
 
     create_indexes()
     print("\n[SERVER] Starting Flask server at http://localhost:5000")
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)
